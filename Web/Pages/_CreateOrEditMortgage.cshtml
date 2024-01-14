@@ -1,0 +1,80 @@
+﻿@using Core.Entities
+@model Mortgage
+<form id="create-form" method="post" asp-page="Index" asp-route-id="@Model.Id" asp-page-handler="CreateOrEditMortgage" onsubmit="return jQueryModalPost(this);">
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">Customer Id</label>
+        @*  <select asp-for="CustomerId" asp-items="@(new SelectList(Model.CustomerEntitys.Name, "Id", "Name"))" class="form-control">
+            <option value="">Select a Customer</option>
+        </select>. *@
+        <div class="col-md-9">
+            <input type="number" autocomplete="off" asp-for="CustomerId" name="CustomerId" class="form-control" />
+            <span asp-validation-for="CustomerId" class="text-danger"></span>
+        </div>        
+    </div>
+        
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">Property Id</label>
+      @*   <select asp-for="PropertyId" asp-items="@(new SelectList(Model.PropertyEntitys.Address, "Id", "Address"))" class="form-control">
+            <option value="">Select a Property</option>
+        </select> *@
+        <div class="col-md-9">
+            <input type="number" autocomplete="off" asp-for="PropertyId" name="PropertyId" class="form-control" />
+            <span asp-validation-for="PropertyId" class="text-danger"></span>
+        </div>
+    </div>
+        
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">LoanDuration</label>
+        <div class="col-md-9">
+            <input type="number" autocomplete="off" asp-for="LoanDuration" name="LoanDuration" class="form-control" />
+            <span asp-validation-for="LoanDuration" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">LoanAmount</label>
+        <div class="col-md-9">
+            <input type="decimal" autocomplete="off" asp-for="LoanAmount" name="LoanAmount" class="form-control">
+            <span asp-validation-for="LoanAmount" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">InterestRate</label>
+        <div class="col-md-9">
+            <input type="decimal" autocomplete="off" asp-for="InterestRate" name="InterestRate" class="form-control">
+            <span asp-validation-for="InterestRate" class="text-danger"></span>
+        </div>
+    </div>
+   @*  <div class="form-group row">
+        <label class="col-md-3 col-form-label">InterestRate</label>
+        <div class="col-md-9">
+            <input type="decimal" autocomplete="off" asp-for="InterestRate" name="Bedrooms" class="form-control">
+            <span asp-validation-for="InterestRate" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">TotalIntrest</label>
+        <div class="col-md-9">
+            <input type="decimal" autocomplete="off" asp-for="TotalIntrest" name="TotalIntrest" class="form-control">
+            <span asp-validation-for="TotalIntrest" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">TotalPayment</label>
+        <div class="col-md-9">
+            <input type="decimal" autocomplete="off" asp-for="TotalPayment" name="TotalPayment" class="form-control">
+            <span asp-validation-for="TotalPayment" class="text-danger"></span>
+        </div>
+    </div> *@
+    <div class="form-group row">
+        <div class="col-md-3">
+        </div>
+    </div>
+    <div class="form-group justify-content-between">
+        <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary save-button">Save</button>
+    </div>
+
+</form>
+<script type="text/javascript" language=javascript>
+    $.validator.unobtrusive.parse(document);
+</script>    
