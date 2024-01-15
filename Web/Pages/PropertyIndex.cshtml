@@ -1,26 +1,21 @@
 ﻿@page
-@model IndexModel
+@model PropertyIndex
 @{
     ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Customer Razor CRUD</h1>
+    <h1 class="display-4">Property Razor CRUD</h1>
 </div>
 <div class="card">
     <div class="col-sm-12" style="padding:20px">
-        <a onclick="jQueryModalGet('?handler=CreateOrEdit','Create Customer')" class="btn bg-success">
+        <a onclick="jQueryModalGet('?handler=CreateOrEdit','Create Property')" class="btn bg-success">
             Create
         </a>
         <a id="reload" class="btn bg-warning">
             Reload
-        </a>
-       @*  <a onclick="jQueryModalGet('?handler=CreateOrEditProperty','Create Property')" class="btn bg-success">
-            PropertyDetails
-        </a> *@
-      @*   <a onclick="jQueryModalGet('?handler=CreateOrEditMortgage','Create Mortgage')" class="btn bg-success">
-            MortgageDetails
-        </a> *@
+        </a>     
+     
     </div>
     <div id="viewAll" class="card-body table-responsive"></div>
 </div>

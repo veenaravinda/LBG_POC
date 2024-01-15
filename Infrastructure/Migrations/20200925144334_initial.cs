@@ -66,19 +66,20 @@ namespace Infrastructure.Migrations
               },
               constraints: table =>
               {
-                  table.PrimaryKey("PK_Mortgages", x => x.Id);
-                  table.ForeignKey(
-                           name: "FK_Mortgage_Customers",
-                           column: x => x.CustomerId,
-                           principalTable: "Customers",  // Name of the parent table
-                           principalColumn: "PK_Customers", // Name of the primary key column in the parent table
-                           onDelete: ReferentialAction.Cascade); // Define the desired behavior on delete
-                  table.ForeignKey(
-                          name: "FK_Mortgage_Properties",
-                          column: x => x.PropertyId,
-                          principalTable: "Properties",  // Name of the parent table
-                          principalColumn: "PK_Property", // Name of the primary key column in the parent table
-                          onDelete: ReferentialAction.Cascade); // Define the desired behavior on delete
+                  table.PrimaryKey("PK_Mortgages", x => x.CustomerId);
+                  table.PrimaryKey("PK_Mortgages", x => x.PropertyId);
+                  //table.ForeignKey(
+                  //         name: "FK_Mortgage_Customers",
+                  //         column: x => x.CustomerId,
+                  //         principalTable: "Customers",  // Name of the parent table
+                  //         principalColumn: "PK_Customers", // Name of the primary key column in the parent table
+                  //         onDelete: ReferentialAction.Cascade); // Define the desired behavior on delete
+                  //table.ForeignKey(
+                  //        name: "FK_Mortgage_Properties",
+                  //        column: x => x.PropertyId,
+                  //        principalTable: "Properties",  // Name of the parent table
+                  //        principalColumn: "PK_Property", // Name of the primary key column in the parent table
+                  //        onDelete: ReferentialAction.Cascade); // Define the desired behavior on delete
 
               });
             // migrationBuilder.Sql("ALTER TABLE Customers ADD CONSTRAINT CHK_PositiveDecimal CHECK (Income > 0)");

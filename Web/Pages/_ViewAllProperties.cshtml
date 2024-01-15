@@ -72,7 +72,7 @@
 
                     <td text-right">
                         <a onclick="jQueryModalGet('?handler=CreateOrEditProperty&id=@property.Id','Edit Property')" class="btn btn-info text-white"> Edit</a>
-                        <form method="post" asp-page="Index" asp-route-id="@property.Id" asp-page-handler="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                        <form method="post" asp-page="PropertyIndex" asp-route-id="@property.Id" asp-page-handler="Delete" onsubmit="return jQueryPropertyModalDelete(this)" class="d-inline">
                             <button type="submit" class="btn btn-danger text-white"> Delete</button>
                         </form>
                     </td>

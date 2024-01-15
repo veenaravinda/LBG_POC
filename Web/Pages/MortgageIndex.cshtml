@@ -1,0 +1,208 @@
+﻿@page
+@model MortgageIndex
+@{
+    ViewData["Title"] = "Mortgage page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Mortgage Razor CRUD</h1>
+</div>
+<div class="card">
+    <div class="col-sm-12" style="padding:20px">
+       @*  <a onclick="jQueryModalGet('?handler=CreateOrEditMortgage','Create Mortgage')" class="btn bg-success">
+            Create
+        </a>
+        *@
+        <a id="reload" class="btn bg-warning">
+            Reload
+        </a>        
+    </div>
+    <div id="viewAll" class="card-body table-responsive"></div>
+</div>
+<table class="table table-bordered" id="mortgageTable">
+    <thead>
+        <tr>
+            <th>
+                CustomerName
+            </th>
+            <th>
+                AddressName
+            </th>
+            <th>
+                LoanDuration
+            </th>
+            <th>
+                LoanAmount
+            </th>
+            <th>
+                InterestRate
+            </th>
+            <th>
+                MonthlyPayment
+            </th>
+            <th>
+                TotalInterest
+            </th>
+            <th>
+                TotalPayment
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Mortgages.Count() != 0)
+        {
+            @foreach (var mortgage in Model.Mortgages)
+            {
+                var monthlyPaymentupper = (@mortgage.LoanAmount * @mortgage.InterestRate / 1200);
+                var monthlyPaymentlower = (1 + (@mortgage.InterestRate) / 1200) - @mortgage.LoanDuration;
+                var monthlyPayment = (monthlyPaymentupper / monthlyPaymentlower);
+
+
+                var totalPayment = Math.Round(@mortgage.TotalPayment - @mortgage.LoanAmount, 2);
+                var totalInterest = Math.Round(@totalPayment - @mortgage.LoanAmount, 2);
+
+
+                <tr>        
+                    <td>
+                        @mortgage.CustomerEntitys.Name
+                    </td>
+                    <td>
+                        @mortgage.PropertyEntitys.Address
+                    </td>
+                    <td>
+                        @mortgage.LoanDuration
+                    </td>
+                    <td>
+                        @mortgage.LoanAmount
+                    </td>
+                    <td>
+                        @mortgage.InterestRate
+                    </td>
+                    <td>
+                        @monthlyPayment
+                        @*    ROUND((@mortgage.LoanAmount * @mortgage.InterestRate / 1200) / (1 -POWER(1 + @mortgage.InterestRate / 1200,-@mortgage.LoanDuration)),2) *@
+                    </td>
+                    <td>
+                        @* ROUND(@mortgage.TotalPayment - @mortgage.LoanAmount,2) *@
+                        @totalPayment
+
+                    </td>
+                    <td>
+                        @totalInterest
+                    </td>
+                    <td text-right">
+                        <a onclick="jQueryModalGet('?handler=CreateOrEditMortgage&id=@mortgage.Id','Edit Mortgage')" class="btn btn-info text-white"> Edit</a>
+                        <form method="post" asp-page="MortgageIndex" asp-route-id="@mortgage.Id" asp-page-handler="Delete" onsubmit="return jQueryMortgageModalDelete(this)" class="d-inline">
+                            <button type="submit" class="btn btn-danger text-white"> Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+<h2>Create Mortgage</h2>
+
+<form id="create-form" method="post" asp-page="Index"  asp-page-handler="CreateOrEditMortgage" onsubmit="return jQueryMortgageModalPost(this);">
+
+    <!-- Other form elements -->
+    @*  <div class="form-group">
+    <label class="col-md-3 col-form-label">Customer Id</label>
+    <select class="form-control" id="CustomerId" name="CustomerId">
+    @foreach (var customer in Model.CustomerEntitys)
+    {
+    <option value="@customer.Id">@customer.Name</option>
+    }
+
+    </select>
+    </div>
+    *@
+
+
+
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">Customer Name</label>
+        <div class="col-md-9">
+        <select class="form-control" id="CategoryId" name="CategoryId">
+             <option value="">Select a Customer</option>
+            @foreach (var category in Model.Customers)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+        </div>
+     </div>
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">Property Name</label>
+        <div class="col-md-9">
+        <select class="form-control" id="PropertyId" name="PropertyId">
+             <option value="">Select a Property</option>
+
+            @foreach (var property in Model.Properties)
+            {
+                <option value="@property.Id">@property.Address</option>
+            }
+        </select>
+        </div>
+    </div>       
+    
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">LoanDuration</label>
+        <div class="col-md-9">
+            <input type="number" autocomplete="off" class="form-control" id="LoanDuration" name="LoanDuration" required />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">LoanAmount</label>
+        <div class="col-md-9">
+            <input type="decimal" autocomplete="off" class="form-control" id="LoanAmount" name="LoanAmount" required />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">InterestRate</label>
+        <div class="col-md-9">
+            <input type="decimal" autocomplete="off" class="form-control" id="InterestRate" name="InterestRate" required />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+        </div>
+    </div>
+    <div class="form-group justify-content-between">
+        <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary save-button">Save</button>
+    </div>
+
+</form>
+<script type="text/javascript" language=javascript>
+    $.validator.unobtrusive.parse(document);
+</script>
+<script>
+    $(document).ready(function () {
+        $("#mortgageTable").DataTable();
+    });
+</script>
+
+ @section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#viewAll').load('?handler=ViewAllPartial');
+
+        });
+        $(function () {
+            $('#reload').on('click', function () {
+                $('#viewAll').load('?handler=ViewAllPartial');
+            });
+        });
+    </script>
+}
+ 
