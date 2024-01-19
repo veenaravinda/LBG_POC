@@ -1,37 +1,66 @@
 ﻿@using Core.Entities
 @model Mortgage
 
+<form id="create-form" method="post" asp-page="MortgageIndex" asp-route-id="@Model.Id"  asp-page-handler="CreateOrEditMortgage" onsubmit="return jQueryModalPost(this);">
 
-<!-- Use indexModel to access properties of IndexModel -->
-
-
-<form id="create-form" method="post" asp-page="Index" asp-route-id="@Model.Id" asp-page-handler="CreateOrEditMortgage" onsubmit="return jQueryModalPost(this);">
-
-    <!-- Other form elements -->
-
-  @*   <div class="form-group">
-        <label class="col-md-3 col-form-label">Customer Name</label>        
+    <div class="form-group row">
+        <label class="col-md-3 col-form-label">Customer Name</label>
         <div class="col-md-9">
+            <select class="form-control" id="CustomerId" name="CustomerId">
 
-            <select asp-for="CustomerId" asp-items="@(new SelectList(indexModel.Customers, "Id", "Name"))" class="form-control">
-            <option value="">Select a Property</option>
-        </select>
-
+                @if (Model.Id != 0)
+                {
+                    <option value="@Model.CustomerEntitys.Id">@Model.CustomerEntitys.Name</option>
+                    @foreach (var customer in Model.CustomerInfo)
+                    {
+                        <option value="@customer.CustomerId">@customer.CustomerName</option>
+                    }
+                }
+                else
+                {
+                    <option value="">Select a Customer</option>
+                    @foreach (var customer in Model.CustomerInfo)
+                    {
+                        <option value="@customer.CustomerId">@customer.CustomerName</option>
+                    }
+                }
+              
+            </select>
+        </div>
     </div>
-    </div>
-
-    <div class="form-group">
+    <div class="form-group row">
         <label class="col-md-3 col-form-label">Property Name</label>
         <div class="col-md-9">
-        <select asp-for="PropertyId" asp-items="@(new SelectList(indexModel.Properties, "Id", "Address"))" class="form-control">
-            <option value="">Select a Property</option>
-        </select>
-            </div>
-        </div>   
-   *@  <div class="form-group row">
+            <select class="form-control" id="PropertyId" name="PropertyId">
+
+                @if (Model.Id != 0)
+                {
+                    <option value="@Model.PropertyEntitys.Id">@Model.PropertyEntitys.Address</option>
+
+                    @foreach (var property in Model.PropertyInfo)
+                    {
+                        <option value="@property.PropertyId">@property.AddressName</option>
+                    }                }
+                else
+                {
+                    <option value="">Select a Property</option>
+
+                    @foreach (var property in Model.PropertyInfo)
+                    {
+                        <option value="@property.PropertyId">@property.AddressName</option>
+                    }
+                }
+
+
+              
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row">
         <label class="col-md-3 col-form-label">LoanDuration</label>
         <div class="col-md-9">
-            <input type="number" autocomplete="off" asp-for="LoanDuration" name="LoanDuration" class="form-control" />
+            <input type="number" autocomplete="off" asp-for="LoanDuration" name="LoanDuration" class="form-control">
             <span asp-validation-for="LoanDuration" class="text-danger"></span>
         </div>
     </div>
@@ -49,27 +78,7 @@
             <span asp-validation-for="InterestRate" class="text-danger"></span>
         </div>
     </div>
-    @*  <div class="form-group row">
-    <label class="col-md-3 col-form-label">InterestRate</label>
-    <div class="col-md-9">
-    <input type="decimal" autocomplete="off" asp-for="InterestRate" name="Bedrooms" class="form-control">
-    <span asp-validation-for="InterestRate" class="text-danger"></span>
-    </div>
-    </div>
-    <div class="form-group row">
-    <label class="col-md-3 col-form-label">TotalIntrest</label>
-    <div class="col-md-9">
-    <input type="decimal" autocomplete="off" asp-for="TotalIntrest" name="TotalIntrest" class="form-control">
-    <span asp-validation-for="TotalIntrest" class="text-danger"></span>
-    </div>
-    </div>
-    <div class="form-group row">
-    <label class="col-md-3 col-form-label">TotalPayment</label>
-    <div class="col-md-9">
-    <input type="decimal" autocomplete="off" asp-for="TotalPayment" name="TotalPayment" class="form-control">
-    <span asp-validation-for="TotalPayment" class="text-danger"></span>
-    </div>
-    </div> *@
+           
     <div class="form-group row">
         <div class="col-md-3">
         </div>

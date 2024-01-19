@@ -1,6 +1,6 @@
 ﻿@using Core.Entities
 @model Property
-<form id="create-form" method="post" asp-page="Index" asp-route-id="@Model.Id" asp-page-handler="CreateOrEditProperty" onsubmit="return jQueryModalPost(this);">
+<form id="create-form" method="post" asp-page="PropertyIndex" asp-route-id="@Model.Id" asp-page-handler="CreateOrEditProperty" onsubmit="return jQueryModalPost(this);">
     <div class="form-group row">
         <label class="col-md-3 col-form-label">Address</label>
         <div class="col-lg-9">

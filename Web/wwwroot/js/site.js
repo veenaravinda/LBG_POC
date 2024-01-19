@@ -46,30 +46,6 @@
             console.log(ex)
         }
     }
-    jQueryMortgageModalPost = form => {
-        try {
-            $.ajax({
-                type: 'POST',
-                url: form.action,
-                data: new FormData(form),
-                contentType: false,
-                processData: false,
-                success: function (res) {
-                    if (res.isValid) {
-                        $('#ViewAllMortgages').html(res.html)
-                        $('#form-modal').modal('hide');
-                    }
-                },
-                error: function (err) {
-                    console.log(err)
-                }
-            })
-            return false;
-        } catch (ex) {
-            console.log(ex)
-        }
-    }
-
     jQueryModalDelete = form => {
         if (confirm('Are you sure to delete this record ?')) {
             try {
@@ -90,54 +66,8 @@
                 console.log(ex)
             }
         }
-    }
-    jQueryMortgageModalDelete = form => {
-        if (confirm('Are you sure to delete this record ?')) {
-            try {
-                $.ajax({
-                    type: 'POST',
-                    url: form.action,
-                    data: new FormData(form),
-                    contentType: false,
-                    processData: false,
-                    success: function (res) {
-                        $('#ViewAllMortgages').html(res.html);
-                    },
-                    error: function (err) {
-                        console.log(err)
-                    }
-                })
-            } catch (ex) {
-                console.log(ex)
-            }
-        }
-    }
 
-    jQueryPropertyModalDelete = form => {
-        if (confirm('Are you sure to delete this record ?')) {
-            try {
-                $.ajax({
-                    type: 'POST',
-                    url: form.action,
-                    data: new FormData(form),
-                    contentType: false,
-                    processData: false,
-                    success: function (res) {
-                        $('#ViewAllProperties').html(res.html);
-                    },
-                    error: function (err) {
-                        console.log(err)
-                    }
-                })
-            } catch (ex) {
-                console.log(ex)
-            }
-        }
+        //prevent default form submit event
+        return false;
     }
-    
-
-    //prevent default form submit event
-    return false;
-}
 });
-

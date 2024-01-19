@@ -10,7 +10,7 @@ namespace Core.Entities
     {
         public int Id { get; set; }
         [Required]
-      
+
         public int CustomerId { get; set; }
 
         [Required]
@@ -39,12 +39,22 @@ namespace Core.Entities
         public DateTime CreatedAt { get; set; }
         public Customer CustomerEntitys { get; set; }
         public Property PropertyEntitys { get; set; }
-     //   public List<Customer> CustomerEntitys { get; set; }
-       // public List<Property> PropertyEntitys { get; set; }
-   // }
-}
+        public List<CustomerInfo> CustomerInfo { get; set; }
+       public List<PropertyInfo> PropertyInfo{ get; set; }
+        
+    }
 
-
-   
+    public class CustomerInfo
+    {
+        [Key]
+        public int CustomerId { get; set; }
+        public string CustomerName { get; set; }
+    }
+    public class PropertyInfo
+    {
+        [Key]
+        public int PropertyId { get; set; }
+        public string AddressName { get; set; }
+    }
 
 }

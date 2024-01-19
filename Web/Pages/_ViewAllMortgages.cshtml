@@ -1,21 +1,23 @@
 ﻿@using Core.Entities
 @model IEnumerable<Mortgage>
 
-<table class="table table-bordered" id="mortgageTable">
+@* <table class="table table-bordered " id="mortgageTable" .table-sm> *@
+    <table class="table table-bordered table-sm" id="mortgageTable">
+
     <thead>
         <tr>
             <th>
-                CustomerName
+                CustomerId
             </th>
             <th>
-                AddressName
+                Address
             </th>
             <th>
                 LoanDuration
             </th>
             <th>
                 LoanAmount
-            </th>           
+            </th>
             <th>
                 InterestRate
             </th>
@@ -27,7 +29,7 @@
             </th>
             <th>
                 TotalPayment
-            </th>            
+            </th>
             <th>
                 Actions
             </th>
@@ -38,36 +40,27 @@
         {
             @foreach (var mortgage in Model)
             {
-                var monthlyPaymentupper = (@mortgage.LoanAmount * @mortgage.InterestRate / 1200);
-                var monthlyPaymentlower = (1 + (@mortgage.InterestRate) / 1200) - @mortgage.LoanDuration;
-                var monthlyPayment = (monthlyPaymentupper / monthlyPaymentlower);
 
-      
-             var totalPayment = Math.Round(@mortgage.TotalPayment - @mortgage.LoanAmount, 2);
-             var totalInterest = Math.Round(@totalPayment - @mortgage.LoanAmount, 2);
+                double monthlyInterestRate = Convert.ToDouble(@mortgage.InterestRate) / 12 / 100;
+                int numberOfPayments = @mortgage.LoanDuration * 12;
+
+                double monthlyPaymentUpper = Convert.ToDouble(@mortgage.LoanAmount * @mortgage.InterestRate);
+
+                double monthlyPayment = Math.Round(Convert.ToDouble(@mortgage.LoanAmount) * (@monthlyInterestRate * Math.Pow(1 + @monthlyInterestRate, @numberOfPayments)) /
+                (Math.Pow(1 + @monthlyInterestRate, @numberOfPayments) - 1),2);
+
+                double totalPayment = Math.Round((@monthlyPayment * @mortgage.LoanDuration * 12),2);
+
+                double totalInterest = Math.Round(@totalPayment - Convert.ToDouble(@mortgage.LoanAmount), 2);
 
 
                 <tr>
-                    @*  <td>
-                        @foreach (var customer in @mortgage.CustomerEntitys)
-                        {
-                            @customer.Name
-                        }
-                      </td>
-                    <td>
-                        @foreach (var property in @mortgage.PropertyEntitys)
-                        {
-                            @property.Address
-                        }
-                    </td>
-                    *@
-
                     <td>
                         @mortgage.CustomerId
                     </td>
                     <td>
                         @mortgage.PropertyId
-                    </td>                   
+                    </td>
                     <td>
                         @mortgage.LoanDuration
                     </td>
@@ -79,30 +72,23 @@
                     </td>
                     <td>
                         @monthlyPayment
-                     @*    ROUND((@mortgage.LoanAmount * @mortgage.InterestRate / 1200) / (1 -POWER(1 + @mortgage.InterestRate / 1200,-@mortgage.LoanDuration)),2) *@
-                    </td>                    
-                    <td>
-                        @* ROUND(@mortgage.TotalPayment - @mortgage.LoanAmount,2) *@
-                        @totalPayment
-                      
                     </td>
                     <td>
-                       @totalInterest
-                    </td>                    
+                        @totalInterest
+                    </td>
+                    <td>
+                        @totalPayment
+                    </td>
                     <td text-right">
                         <a onclick="jQueryModalGet('?handler=CreateOrEditMortgage&id=@mortgage.Id','Edit Mortgage')" class="btn btn-info text-white"> Edit</a>
-                        <form method="post" asp-page="Index" asp-route-id="@mortgage.Id" asp-page-handler="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                        <form method="post" asp-page="MortgageIndex" asp-route-id="@mortgage.Id" asp-page-handler="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
                             <button type="submit" class="btn btn-danger text-white"> Delete</button>
                         </form>
-                    </td>                    
+                    </td>
                 </tr>
             }
-        }
+        }    
 
     </tbody>
-</table>
-<script>
-    $(document).ready(function () {
-        $("#mortgageTable").DataTable();
-    });
-</script>
+</table> 
+

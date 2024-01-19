@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Entities;
 using Core.Interfaces;
+//using Infrastructure.Migrations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,14 +15,16 @@ using Web.Services;
 
 namespace Web.Pages
 {
-public class MortgageIndex : PageModel
-{
-    private readonly ICustomerRepositoryAsync _customer;
+    public class MortgageIndex : PageModel
+    {
+        private readonly ICustomerRepositoryAsync _customer;
         private readonly IPropertyRepositoryAsync _property;
         private readonly IMortgageRepositoryAsync _mortgage;
         private readonly IUnitOfWork _unitOfWork;
-    private readonly IRazorRenderService _renderService;
-    private readonly ILogger<IndexModel> _logger;
+        private readonly IRazorRenderService _renderService;
+        private readonly ILogger<IndexModel> _logger;
+        public CustomerInfo _customerInfo;
+        public PropertyInfo _propertyInfo;
 
         public MortgageIndex(ILogger<IndexModel> logger, ICustomerRepositoryAsync customer, IPropertyRepositoryAsync property, IMortgageRepositoryAsync mortgage, IUnitOfWork unitOfWork, IRazorRenderService renderService)
         {
@@ -32,23 +35,56 @@ public class MortgageIndex : PageModel
             _unitOfWork = unitOfWork;
             _renderService = renderService;
         }
-    public IEnumerable<Customer> Customers { get; set; }
-    public IEnumerable<Property> Properties { get; set; }
-    public IEnumerable<Mortgage> Mortgages { get; set; }
+        public IEnumerable<Customer> Customers { get; set; }
+        public IEnumerable<Property> Properties { get; set; }
+        public IEnumerable<Mortgage> Mortgages { get; set; }
 
-       
+        public List<CustomerInfo> CustomersInfo { get; set; }
+        public List<PropertyInfo> PropertiesInfo { get; set; }
+
+
+
+        public void customer()
+        {
+
+            PropertiesInfo = new List<PropertyInfo>();
+
+            CustomersInfo = new List<CustomerInfo>();
+
+            foreach (Customer info in Customers)
+            {
+                _customerInfo = new CustomerInfo();
+                _customerInfo.CustomerId = info.Id;
+                _customerInfo.CustomerName = info.Name;
+                CustomersInfo.Add(_customerInfo);
+            }
+            foreach (Property info in Properties)
+            {
+                _propertyInfo = new PropertyInfo();
+                _propertyInfo.PropertyId = info.Id;
+                _propertyInfo.AddressName = info.Address;
+                PropertiesInfo.Add(_propertyInfo);
+            }
+                        
+        }
         public async Task OnGetAsync()
         {
             Customers = await _customer.GetAllAsync();
             Properties = await _property.GetAllAsync();
+            customer();
             Mortgages = await _mortgage.GetAllAsync();
 
+            foreach ( Mortgage mortgage in Mortgages)
+            {
+                mortgage.PropertyInfo = PropertiesInfo;
+                mortgage.CustomerInfo = CustomersInfo;
+
+            }            
         }
 
         public async Task<PartialViewResult> OnGetViewAllPartial()
         {
             Mortgages = await _mortgage.GetAllAsync();
-
             return new PartialViewResult
             {
                 ViewName = "_ViewAllMortgages",
@@ -58,61 +94,25 @@ public class MortgageIndex : PageModel
 
         public async Task<JsonResult> OnGetCreateOrEditMortgageAsync(int id = 0)
         {
+            Customers = await _customer.GetAllAsync();
+            Properties = await _property.GetAllAsync();
+
+            customer();
+            Mortgage mortgage = new Mortgage
+            {
+                PropertyInfo = PropertiesInfo,
+                CustomerInfo = CustomersInfo
+            };
             if (id == 0)
-           // {
-               // Customers = await _customer.GetAllAsync();
-               // ViewBag.ChildEntities = new SelectList(_context.ChildEntities, "Id", "ChildName");
-               // ViewData = new ViewDataDictionary<IEnumerable<Customer>>(ViewData, Customers)
-                return new JsonResult(new { isValid = true, html = await _renderService.ToStringAsync("_CreateOrEditMortgage", new Mortgage()) });
-                //return new JsonResult(new
-                //{
-                //    isValid = true,
-                //    html = await _renderService.ToStringAsync("_CreateOrEditMortgage",
-                //     new Mortgage
-                //     {
-                //         CustomerEntity= Customers.ToList<_customer>()
-
-                //     }          //  Categories = _context.Categories.ToList()
-
-                                          
-                //});
-
-       // }
+                 return new JsonResult(new { isValid = true, html = await _renderService.ToStringAsync("_CreateOrEditMortgage",   mortgage) });
             else
             {
                 var thisMortgage = await _mortgage.GetByIdAsync(id);
+                thisMortgage.CustomerInfo = CustomersInfo;
+                thisMortgage.PropertyInfo = PropertiesInfo;
                 return new JsonResult(new { isValid = true, html = await _renderService.ToStringAsync("_CreateOrEditMortgage", thisMortgage) });
             }
         }
-/*
-        public IActionResult Create()
-        {
-            var viewModel = new ProductViewModel
-            {
-                Categories = _context.Categories.ToList()
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public IActionResult Create(ProductViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                // Save the product to the database
-                // ...
-
-                return RedirectToAction("Index");
-            }
-
-            model.Categories = _context.Categories.ToList();
-            return View(model);
-        }
-
-        */
-
-
         public async Task<JsonResult> OnPostCreateOrEditMortgageAsync(int id, Mortgage mortgage)
         {
             if (ModelState.IsValid)
@@ -124,20 +124,17 @@ public class MortgageIndex : PageModel
                 }
                 else
                 {
-                    //mortgage.CustomerEntitys = 
                     await _mortgage.UpdateAsync(mortgage);
                     await _unitOfWork.Commit();
                 }
-                // model.Categories = _context.Categories.ToList();
-               // _mortgage.AddAsync(_customer);
                 Mortgages = await _mortgage.GetAllAsync();
-              
+
                 var html = await _renderService.ToStringAsync("_ViewAllMortgages", Mortgages);
                 return new JsonResult(new { isValid = true, html = html });
             }
             else
             {
-                var html = await _renderService.ToStringAsync("_CreateOrEditMortgage", Mortgages);
+                var html = await _renderService.ToStringAsync("_ViewAllMortgages", Mortgages);
                 return new JsonResult(new { isValid = false, html = html });
             }
         }
@@ -148,8 +145,8 @@ public class MortgageIndex : PageModel
             await _mortgage.DeleteAsync(mortgage);
             await _unitOfWork.Commit();
             Mortgages = await _mortgage.GetAllAsync();
-            var html = await _renderService.ToStringAsync("_ViewAll", Mortgages);
+            var html = await _renderService.ToStringAsync("_ViewAllMortgages", Mortgages);
             return new JsonResult(new { isValid = true, html = html });
         }
-}
+    }
 }
